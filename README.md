@@ -13,7 +13,6 @@ This repository is organized as knowledge-base powers (no `mcp.json` files).
 | [agents](./agents) | Build and configure conversational voice AI agents |
 | [sound-effects](./sound-effects) | Generate sound effects and ambient audio from text prompts |
 | [music](./music) | Compose instrumental tracks and music from prompts |
-| [setup-api-key](./setup-api-key) | Guide users through creating and validating an ElevenLabs API key |
 
 ## Use in Kiro
 
@@ -32,7 +31,7 @@ Most powers require an ElevenLabs API key:
 export ELEVENLABS_API_KEY="your-api-key"
 ```
 
-Get your API key from [ElevenLabs API Keys](https://elevenlabs.io/app/settings/api-keys), or use the `setup-api-key` power workflow.
+Get your API key from [ElevenLabs API Keys](https://elevenlabs.io/app/settings/api-keys).
 
 ## SDK Notes
 
