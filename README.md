@@ -1,47 +1,49 @@
-# ElevenLabs Powers for Kiro
+# ElevenLabs Kiro Power
 
-Kiro powers for [ElevenLabs](https://elevenlabs.io) developer workflows. Each power includes a `POWER.md` entry file and optional `steering/` guidance files.
+One consolidated Kiro power for [ElevenLabs](https://elevenlabs.io) developer workflows.
 
-This repository is organized as knowledge-base powers (no `mcp.json` files).
+This repository is a documentation-only power: a single root `POWER.md` plus capability-specific files in `steering/`. There is no `mcp.json` in this repo.
 
-## Available Powers
+## Included Capabilities
 
-| Power | Description |
-|-------|-------------|
-| [text-to-speech](./text-to-speech) | Generate natural speech with ElevenLabs voices |
-| [speech-to-text](./speech-to-text) | Transcribe audio/video with Scribe v2, realtime, diarization, and timestamps |
-| [agents](./agents) | Build and configure conversational voice AI agents |
-| [sound-effects](./sound-effects) | Generate sound effects and ambient audio from text prompts |
-| [music](./music) | Compose instrumental tracks and music from prompts |
+- Text to speech
+- Speech to text
+- Conversational agents
+- Sound effects
+- Music
 
-## Use in Kiro
+## How It Works In Kiro
 
-Install from:
+1. Kiro loads the root `POWER.md` into the initial context window.
+2. Kiro infers user intent from the prompt.
+3. Kiro retrieves only the relevant files from `steering/`.
 
-- **GitHub URL**: add this repository in Kiro Powers
-- **Local path**: add this repository folder from disk
+The installation and setup guidance now lives in one place: the root `POWER.md`. Capability-specific behavior stays in separate steering files so Kiro can retrieve a smaller, more targeted context set.
 
-Each power can be installed individually by selecting its folder (for example, `text-to-speech/`) as a local power path.
+## Install In Kiro
+
+Install this repository from:
+
+- GitHub URL
+- Local path
+
+When installing from disk, select the repository root as the local power path.
 
 ## Configuration
 
-Most powers require an ElevenLabs API key:
+Most workflows require:
 
 ```bash
 export ELEVENLABS_API_KEY="your-api-key"
 ```
 
-Get your API key from [ElevenLabs API Keys](https://elevenlabs.io/app/settings/api-keys).
+Get the key from [ElevenLabs API Keys](https://elevenlabs.io/app/settings/api-keys).
 
-## SDK Notes
+For JavaScript, use `@elevenlabs/elevenlabs-js`, not the legacy `elevenlabs` package.
 
-Examples across powers use:
+## Testing
 
-- **Python**: `pip install elevenlabs`
-- **JavaScript/TypeScript**: `npm install @elevenlabs/elevenlabs-js`
-- **cURL**: direct REST calls
-
-For JavaScript, use `@elevenlabs/elevenlabs-js` (not the legacy `elevenlabs` package).
+Use `TESTING.md` for the manual validation matrix covering setup and every routed capability in this power.
 
 ## License
 

@@ -1,22 +1,12 @@
-# Client-Side Real-Time Streaming
+# Speech-to-Text Realtime Client-Side
 
-Stream audio from the browser directly to ElevenLabs for real-time transcription.
+Use this file only for browser or React realtime transcription. Do not use it for backend streaming.
 
-## Installation
+## Security Rule
 
-```bash
-# React
-npm install @elevenlabs/react @elevenlabs/elevenlabs-js
+Never expose `ELEVENLABS_API_KEY` in the browser. Generate a single-use token on the backend and pass that token to the client.
 
-# JavaScript
-npm install @elevenlabs/client @elevenlabs/elevenlabs-js
-```
-
-> **Warning:** Always use the `@elevenlabs/*` namespace for client-side packages.
-
-## Token Generation
-
-Client-side streaming requires a single-use token to protect your API key. Generate tokens on your backend:
+## Backend Token Endpoint
 
 ```typescript
 import { ElevenLabsClient } from "@elevenlabs/elevenlabs-js";
@@ -31,11 +21,12 @@ app.get("/scribe-token", yourAuthMiddleware, async (req, res) => {
 });
 ```
 
-**Note:** Single-use tokens expire after 15 minutes.
+Single-use tokens expire quickly, so mint them just before the session starts.
 
-## React Implementation
+## React Example
 
 ```typescript
+import { useState } from "react";
 import { useScribe } from "@elevenlabs/react";
 
 function TranscriptionComponent() {
@@ -44,11 +35,9 @@ function TranscriptionComponent() {
   const scribe = useScribe({
     modelId: "scribe_v2_realtime",
     onPartialTranscript: (data) => {
-      // Show live feedback as user speaks
       console.log("Partial:", data.text);
     },
     onCommittedTranscript: (data) => {
-      // Final transcript for this segment
       setTranscript((prev) => prev + data.text);
     },
   });
@@ -67,22 +56,18 @@ function TranscriptionComponent() {
     });
   };
 
-  const stopRecording = () => {
-    scribe.disconnect();
-  };
-
   return (
     <div>
       <div>Status: {scribe.status}</div>
       <button onClick={startRecording}>Start</button>
-      <button onClick={stopRecording}>Stop</button>
+      <button onClick={() => scribe.disconnect()}>Stop</button>
       <p>{transcript}</p>
     </div>
   );
 }
 ```
 
-## JavaScript Implementation
+## Browser JavaScript Example
 
 ```typescript
 import { Scribe, RealtimeEvents } from "@elevenlabs/client";
@@ -102,10 +87,6 @@ async function startTranscription() {
     },
   });
 
-  connection.on(RealtimeEvents.OPEN, () => {
-    console.log("Connected");
-  });
-
   connection.on(RealtimeEvents.PARTIAL_TRANSCRIPT, (data) => {
     console.log("Partial:", data.text);
   });
@@ -113,28 +94,12 @@ async function startTranscription() {
   connection.on(RealtimeEvents.COMMITTED_TRANSCRIPT, (data) => {
     console.log("Committed:", data.text);
   });
-
-  connection.on(RealtimeEvents.COMMITTED_TRANSCRIPT_WITH_TIMESTAMPS, (data) => {
-    for (const word of data.words) {
-      console.log(`${word.text}: ${word.start}s - ${word.end}s`);
-    }
-  });
-
-  connection.on(RealtimeEvents.ERROR, (error) => {
-    console.error("Error:", error);
-  });
-
-  connection.on(RealtimeEvents.CLOSE, () => {
-    console.log("Disconnected");
-  });
-
-  return connection;
 }
 ```
 
-## Manual Audio Chunking
+## Manual Chunking
 
-For file uploads or custom audio sources, encode to PCM-16 and send in chunks:
+Use manual chunking for prerecorded audio or custom browser sources:
 
 ```typescript
 const chunkSize = 4096;
@@ -145,25 +110,23 @@ for (let offset = 0; offset < pcmData.length; offset += chunkSize) {
   const base64 = btoa(String.fromCharCode(...bytes));
 
   scribe.sendAudio(base64);
-
-  // Simulate real-time streaming
   await new Promise((resolve) => setTimeout(resolve, 50));
 }
 
-// Finalize transcription
 scribe.commit();
 ```
 
-## Microphone Options
+## Microphone Settings
 
-| Option | Description |
-|--------|-------------|
-| `echoCancellation` | Remove echo from speakers |
-| `noiseSuppression` | Filter background noise |
-| `autoGainControl` | Normalize volume levels |
+| Option | Purpose |
+|--------|---------|
+| `echoCancellation` | Reduce speaker echo |
+| `noiseSuppression` | Remove background noise |
+| `autoGainControl` | Normalize volume |
 
-## Security
+## Best Practices
 
-- Never expose your API key to the client
-- Always generate single-use tokens on your backend
-- Use authentication middleware to protect token endpoints
+- Protect the token endpoint with your own auth.
+- Use client-side realtime only when the microphone or UI lives in the browser.
+- Request timestamps only when needed.
+- Use VAD for conversational capture and manual commit for fully controlled chunking.
